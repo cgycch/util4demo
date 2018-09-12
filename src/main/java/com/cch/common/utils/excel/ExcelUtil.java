@@ -96,6 +96,15 @@ public class ExcelUtil {
 			IOUtils.closeQuietly(source);
 		}
 	}
+	/**
+	 * 
+	 * @param strSource
+	 * @param strDestination
+	 * @throws Exception
+	 */
+	public static void XLSX2CSV(String strSource, String strDestination) throws Exception{
+         new ExcelToCSV().convertExcelToCSV(strSource, strDestination);
+	}
 
 
 }
