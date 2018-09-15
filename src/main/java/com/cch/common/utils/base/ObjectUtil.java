@@ -7,13 +7,14 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.nustaq.serialization.FSTConfiguration;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.NamedThreadLocal;
 
-public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
+public class ObjectUtil extends ObjectUtils {
 
 	/**
 	 * Convert to Double type
@@ -85,7 +86,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 	 * @return 
 	 */
 	public static String toStringIgnoreNull(final Object val) {
-		return ObjectUtils.toStringIgnoreNull(val, StringUtils.EMPTY);
+		return ObjectUtil.toStringIgnoreNull(val, StringUtils.EMPTY);
 	}
 
 	/**
@@ -95,7 +96,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 	 * @return 
 	 */
 	public static String toStringIgnoreNull(final Object val, String defaultVal) {
-		String str = ObjectUtils.toString(val);
+		String str = ObjectUtil.toString(val);
 		return !"".equals(str) && !"null".equals(str.trim().toLowerCase()) ? str : defaultVal;
 	}
 	
@@ -216,8 +217,8 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 		if (source == null){
 			return null;
 		}
-    	byte[] bytes = ObjectUtils.serializeFst(source);
-    	Object target = ObjectUtils.unserializeFst(bytes);
+    	byte[] bytes = ObjectUtil.serializeFst(source);
+    	Object target = ObjectUtil.unserializeFst(bytes);
 	    return target;
 	}
 	

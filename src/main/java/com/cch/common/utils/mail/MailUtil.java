@@ -21,13 +21,13 @@ public class MailUtil {
 		Boolean flag = false;
 		try {
 			ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP1); // 新建server版本
-			ExchangeCredentials credentials = new WebCredentials("1236856486@qq.com", "xerkfwsmxyoqiidh"); // 用户名，密码
+			ExchangeCredentials credentials = new WebCredentials("1136856486@qq.com", "xerkfwsmxyoqiidh"); // 用户名，密码
 			service.setCredentials(credentials);
 			service.setUrl(new URI("https://ex.qq.com/EWS/Exchange.asmx")); // outlook.spacex.com 改为自己的邮箱服务器地址
 			EmailMessage msg = new EmailMessage(service);
 			msg.setSubject("This is a test!"); // 主题
 			msg.setBody(MessageBody.getMessageBodyFromText("this is a test! pls ignore it!")); // 内容
-			msg.getToRecipients().add("1126373925@qq.com"); // 收件人
+			msg.getToRecipients().add("1026373925@qq.com"); // 收件人
 			//msg.getCcRecipients().add("test2@test.com"); //抄送人
 			//msg.getAttachments().addFileAttachment("E:\\123.txt"); //附件
 			msg.send(); // 发送

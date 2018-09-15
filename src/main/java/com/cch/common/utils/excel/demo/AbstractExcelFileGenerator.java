@@ -1,4 +1,4 @@
-package com.cch.common.utils.excel;
+package com.cch.common.utils.excel.demo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,8 +10,10 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
+import com.cch.common.utils.excel.ExcelException;
 import com.cch.common.utils.string.StringUtil;
 
 public abstract class AbstractExcelFileGenerator<T> implements ExcelFileGenerator<T>{
@@ -26,7 +28,7 @@ public abstract class AbstractExcelFileGenerator<T> implements ExcelFileGenerato
 		// do some extend if you need
 	}
 
-	SXSSFWorkbook wb = null;
+	Workbook wb = null;
 	Sheet sheet = null;
 	Map<String, CellStyle> styleMap = null;
 	List<String> headerList = null;
@@ -37,9 +39,6 @@ public abstract class AbstractExcelFileGenerator<T> implements ExcelFileGenerato
 			throws ExcelException {
 		if (StringUtil.isEmpty(filePath) || StringUtil.isEmpty(fileName)) {
 			throw new ExcelException("filePath and fileName could not be empty! ");
-		}
-		if (!StringUtil.isCorrectFileName(fileName)) {
-			fileName = StringUtil.renovateFileName(fileName, "");
 		}
 		if (StringUtil.isEmpty(sheetName)) {
 			sheetName = fileName;

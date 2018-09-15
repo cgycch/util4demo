@@ -13,7 +13,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.DateUtil;
 
-import com.cch.common.utils.base.ObjectUtils;
+import com.cch.common.utils.base.ObjectUtil;
 import com.cch.common.utils.date.DateUtils;
 
 /**
@@ -139,18 +139,18 @@ public class ReflectUtils {
 			for (int i = 0; i < cs.length; i++) {
 				if (args[i] != null && !args[i].getClass().equals(cs[i])) {
 					if (cs[i] == String.class) {
-						args[i] = ObjectUtils.toString(args[i]);
+						args[i] = ObjectUtil.toString(args[i]);
 						if (StringUtils.endsWith((String) args[i], ".0")) {
 							args[i] = StringUtils.substringBefore((String) args[i], ".0");
 						}
 					} else if (cs[i] == Integer.class) {
-						args[i] = ObjectUtils.toInteger(args[i]);
+						args[i] = ObjectUtil.toInteger(args[i]);
 					} else if (cs[i] == Long.class) {
-						args[i] = ObjectUtils.toLong(args[i]);
+						args[i] = ObjectUtil.toLong(args[i]);
 					} else if (cs[i] == Double.class) {
-						args[i] = ObjectUtils.toDouble(args[i]);
+						args[i] = ObjectUtil.toDouble(args[i]);
 					} else if (cs[i] == Float.class) {
-						args[i] = ObjectUtils.toFloat(args[i]);
+						args[i] = ObjectUtil.toFloat(args[i]);
 					} else if (cs[i] == Date.class) {
 						if (args[i] instanceof String) {
 							args[i] = DateUtils.parseDate(args[i]);

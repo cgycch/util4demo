@@ -1,6 +1,6 @@
 package com.cch.common.utils;
 
-import com.cch.common.utils.excel.ExcelUtil;
+import com.cch.common.utils.excel.demo.ExcelUtil;
 
 /**
  * Hello world!
