@@ -5,7 +5,7 @@ import java.util.Date;
 import com.cch.common.utils.excel.annotation.ExcelField;
 import com.cch.common.utils.excel.annotation.ExcelField.Align;
 
-public class BeanOne {
+public class BeanOne implements Cloneable{
 	private String name;
 	private String pass;
 	private int age;
@@ -54,6 +54,14 @@ public class BeanOne {
 	}
 	public void setDate(Date date) {
 		this.date = date;
+	}
+	
+	//@Override
+	public Object clone() throws CloneNotSupportedException {
+		System.out.println("BeanOne clone");
+		BeanOne one = null;
+		one = (BeanOne) super.clone();
+		return one;
 	}
 
 	
