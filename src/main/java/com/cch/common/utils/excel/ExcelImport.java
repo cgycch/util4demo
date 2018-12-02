@@ -8,9 +8,11 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -38,9 +40,7 @@ import com.cch.common.utils.date.DateUtils;
 import com.cch.common.utils.excel.annotation.ExcelField;
 import com.cch.common.utils.excel.annotation.ExcelField.Type;
 import com.cch.common.utils.excel.annotation.ExcelFields;
-import com.cch.common.utils.list.ListUtil;
 import com.cch.common.utils.refect.ReflectUtils;
-import com.cch.common.utils.set.SetUtil;
 import com.cch.common.utils.string.StringUtil;
 
 /**
@@ -56,7 +56,7 @@ public class ExcelImport implements Closeable {
 	/**
 	 * Used to clean cache
 	 */
-	private Set<Class<?>> fieldTypes = SetUtil.newHashSet();
+	private Set<Class<?>> fieldTypes = new HashSet<>();
 	
 	/**
 	 * @param path Import the file object and read the first worksheet.
@@ -334,7 +334,7 @@ public class ExcelImport implements Closeable {
 	 * @param groups 
 	 */
 	public <E> List<E> getDataList(Class<E> cls, MethodCallback exceptionCallback, String... groups) throws InstantiationException, IllegalAccessException{
-		List<Object[]> annotationList = ListUtil.newArrayList();
+		List<Object[]> annotationList = new ArrayList<>();
 		// Get annotation field 
 		Field[] fs = cls.getDeclaredFields();
 		for (Field f : fs){
@@ -369,7 +369,7 @@ public class ExcelImport implements Closeable {
 		});
 		//log.debug("Import column count:"+annotationList.size());
 		// Get excel data
-		List<E> dataList = ListUtil.newArrayList();
+		List<E> dataList = new ArrayList<E>();
 		for (int i = this.getDataRowNum(); i < this.getLastDataRowNum(); i++) {
 			E e = (E)cls.newInstance();
 			Row row = this.getRow(i);

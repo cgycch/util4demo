@@ -1,11 +1,7 @@
-/**
- * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
- */
 package com.cch.common.utils.base;
 
 /**
- * 方法回调接口
- * @author ThinkGem
+ * Method callback interface
  */
 public interface MethodCallback {
 
