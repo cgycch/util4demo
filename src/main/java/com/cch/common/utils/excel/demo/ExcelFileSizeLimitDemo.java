@@ -101,7 +101,7 @@ public class ExcelFileSizeLimitDemo {
 	 */
 	public static <T> List<File> createFileLimitRows(String fileName, List<T> dataList, int maxRows) {
 		List<File> fileList = new ArrayList<>();
-		try (ExcelExport excelExport = new ExcelExport(null, BeanOne.class)) {
+		try{
 			int dataSize = dataList.size();
 			maxRows = (maxRows == 0) ? dataSize : maxRows;
 			int fileNums = dataSize / maxRows;
@@ -143,7 +143,7 @@ public class ExcelFileSizeLimitDemo {
 	public static <T> List<File> createFileLimitSize(String fileName, List<T> dataList, double maxSize,
 			FILE_UNIT unit) {
 		List<File> fileList = new ArrayList<>();
-		try (ExcelExport excelExport = new ExcelExport(null, BeanOne.class)) {
+		try{
 			File file = createFile(fileName, dataList);
 			double fileSize = readableFileSize2Double(file.length(), unit);
 			int fileNum = (int) Math.ceil(fileSize / maxSize);
