@@ -18,10 +18,10 @@ public class ExcelExportDemo {
 		long t1 = System.currentTimeMillis();
 		System.out.println("start");
 		List<BeanOne> list = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 3000; i++) {
 			BeanOne bean = new BeanOne();
 			bean.setName("name"+i);
-			bean.setPass("pass"+i);
+			//bean.setPass("pass"+i);
 			bean.setAge(i);
 			bean.setDate(new Date());
 			bean.setPrice(123.456d + i);

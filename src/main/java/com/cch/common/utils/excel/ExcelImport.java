@@ -20,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -124,10 +125,9 @@ public class ExcelImport implements Closeable {
 	}
 	
 	/**
-	 * 添加到 annotationList
+	 * add to annotationList
 	 */
 	private void addAnnotation(List<Object[]> annotationList, ExcelField ef, Object fOrM, Type type, String... groups){
-//		if (ef != null && (ef.type()==0 || ef.type()==type)){
 		if (ef != null && (ef.type() == Type.ALL || ef.type() == type)){
 			if (groups!=null && groups.length>0){
 				boolean inGroup = false;
@@ -156,7 +156,6 @@ public class ExcelImport implements Closeable {
 	
 	/**
 	 * Sets the number of rows in the current worksheet and heading.
-	 * @author ThinkGem
 	 */
 	public void setSheet(Object sheetIndexOrName, int headerNum) {
 		if (sheetIndexOrName instanceof Integer || sheetIndexOrName instanceof Long){
@@ -165,7 +164,7 @@ public class ExcelImport implements Closeable {
 			this.sheet = this.wb.getSheet(ObjectUtil.toString(sheetIndexOrName));
 		}
 		if (this.sheet == null){
-			throw new ExcelException("没有找到‘"+sheetIndexOrName+"’工作表!");
+			throw new ExcelException("no found ‘"+sheetIndexOrName+"’ worksheet!");
 		}
 		this.headerNum = headerNum;
 	}
@@ -221,12 +220,25 @@ public class ExcelImport implements Closeable {
 		Row row = this.getRow(headerNum);
 		return row == null ? 0 : row.getLastCellNum();
 	}
+	/**
+	 * Cell type compare
+	 * @param cell
+	 * @param type
+	 * @return
+	 */
+	public boolean isCellType(final Cell cell, CellType type) {
+		boolean same = false;
+		if(cell != null && cell.getCellTypeEnum().compareTo(type) == 0) {
+			same = true;
+		}
+		return same;
+	}
 	
 	/**
-	 * 获取单元格值
-	 * @param row 获取的行
-	 * @param column 获取单元格列号
-	 * @return 单元格值
+	 * Get cell value
+	 * @param row 
+	 * @param column 
+	 * @return 
 	 */
 	public Object getCellValue(Row row, int column){
 		if (row == null){
@@ -236,10 +248,10 @@ public class ExcelImport implements Closeable {
 		try{
 			Cell cell = row.getCell(column);
 			if (cell != null){
-				if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC){
+				if (isCellType(cell, CellType.NUMERIC)){
 					val = cell.getNumericCellValue();
 					if (HSSFDateUtil.isCellDateFormatted(cell)) {
-						val = DateUtil.getJavaDate((Double) val); // POI Excel 日期格式转换
+						val = DateUtil.getJavaDate((Double) val);
 					}else{
 						if ((Double) val % 1 > 0){
 							val = new DecimalFormat("0.00").format(val);
@@ -247,36 +259,36 @@ public class ExcelImport implements Closeable {
 							val = new DecimalFormat("0").format(val);
 						}
 					}
-				}else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+				}else if (isCellType(cell, CellType.STRING)) {
 					val = cell.getStringCellValue();
-				}else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA){
+				}else if (isCellType(cell, CellType.FORMULA)){
 					try {
 						val = cell.getStringCellValue();
 					} catch (Exception e) {
 						FormulaEvaluator evaluator = cell.getSheet().getWorkbook()
 								.getCreationHelper().createFormulaEvaluator();
-						evaluator.evaluateFormulaCell(cell);
+						evaluator.evaluateFormulaCellEnum(cell);
 						CellValue cellValue = evaluator.evaluate(cell);
-						switch (cellValue.getCellType()) {
-						case Cell.CELL_TYPE_NUMERIC:
+						switch (cellValue.getCellTypeEnum()) {
+						case NUMERIC:
 							val = cellValue.getNumberValue();
 							break;
-						case Cell.CELL_TYPE_STRING:
+						case STRING:
 							val = cellValue.getStringValue();
 							break;
-						case Cell.CELL_TYPE_BOOLEAN:
+						case BOOLEAN:
 							val = cellValue.getBooleanValue();
 							break;
-						case Cell.CELL_TYPE_ERROR:
+						case ERROR:
 							val = ErrorEval.getText(cellValue.getErrorValue());
 							break;
 						default:
 							val = cell.getCellFormula();
 						}
 					}
-				}else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN){
+				}else if (isCellType(cell, CellType.BOOLEAN)){
 					val = cell.getBooleanCellValue();
-				}else if (cell.getCellType() == Cell.CELL_TYPE_ERROR){
+				}else if (isCellType(cell, CellType.ERROR)){
 					val = cell.getErrorCellValue();
 				}
 			}
@@ -287,19 +299,19 @@ public class ExcelImport implements Closeable {
 	}
 	
 	/**
-	 * 获取导入数据列表
-	 * @param cls 导入对象类型
-	 * @param groups 导入分组
+	 * Get the imported data list
+	 * @param cls Import object type
+	 * @param groups 
 	 */
 	public <E> List<E> getDataList(Class<E> cls, String... groups) throws InstantiationException, IllegalAccessException{
 		return getDataList(cls, false, groups);
 	}
 	
 	/**
-	 * 获取导入数据列表
-	 * @param cls 导入对象类型
-	 * @param isThrowException 遇见错误是否抛出异常
-	 * @param groups 导入分组
+	 * Get the imported data list
+	 * @param cls Import object type
+	 * @param isThrowException Whether to throw an exception when encountering a mistake
+	 * @param groups 
 	 */
 	public <E> List<E> getDataList(Class<E> cls, final boolean isThrowException, String... groups) throws InstantiationException, IllegalAccessException{
 		return getDataList(cls, new MethodCallback() {
@@ -316,10 +328,10 @@ public class ExcelImport implements Closeable {
 		}, groups);
 	}
 	/**
-	 * 获取导入数据列表
-	 * @param cls 导入对象类型
-	 * @param isThrowException 遇见错误是否抛出异常
-	 * @param groups 导入分组
+	 * Get the imported data list
+	 * @param cls Import object type
+	 * @param isThrowException Whether to throw an exception when encountering a mistake
+	 * @param groups 
 	 */
 	public <E> List<E> getDataList(Class<E> cls, MethodCallback exceptionCallback, String... groups) throws InstantiationException, IllegalAccessException{
 		List<Object[]> annotationList = ListUtil.newArrayList();
@@ -400,7 +412,7 @@ public class ExcelImport implements Closeable {
 					try {
 						if (StringUtil.isNotBlank(ef.attrName())){
 							if (ef.fieldType() != Class.class){
-								fieldTypes.add(ef.fieldType()); // 先存起来，方便完成后清理缓存
+								fieldTypes.add(ef.fieldType()); // Save it first, then clean it up
 								val = ef.fieldType().getMethod("getValue", String.class).invoke(null, val);
 							}
 						}else{
@@ -424,17 +436,17 @@ public class ExcelImport implements Closeable {
 									if (val instanceof String){
 										val = DateUtils.parseDate(val);
 									}else if (val instanceof Double){
-										val = DateUtil.getJavaDate((Double)val); // POI Excel 日期格式转换
+										val = DateUtil.getJavaDate((Double)val); 
 									}
 								}else{
 									if (ef.fieldType() != Class.class){
-										fieldTypes.add(ef.fieldType()); // 先存起来，方便完成后清理缓存
+										fieldTypes.add(ef.fieldType()); // Save it first, then clean it up
 										val = ef.fieldType().getMethod("getValue", String.class).invoke(null, val.toString());
 									}else{
-										// 如果没有指定 fieldType，切自行根据类型查找相应的转换类（com.cch.common.utils.excel.fieldtype.值的类名+Type）
+										// If no fieldType is specified, the corresponding transformation class is found by type itself.（excel.fieldtype.SimpleName + Type）
 										Class<?> fieldType2 = Class.forName(this.getClass().getName().replaceAll(this.getClass().getSimpleName(), 
 												"fieldtype."+valType.getSimpleName()+"Type"));
-										fieldTypes.add(fieldType2); // 先存起来，方便完成后清理缓存
+										fieldTypes.add(fieldType2); // Save it first, then clean it up
 										val = fieldType2.getMethod("getValue", String.class).invoke(null, val.toString());
 									}
 								}
@@ -443,7 +455,7 @@ public class ExcelImport implements Closeable {
 					} catch (Exception ex) {
 						log.info("Get cell value ["+i+","+column+"] error: " + ex.toString());
 						val = null;
-						// 参数：Exception ex, int rowNum, int columnNum
+						//Exception ex, int rowNum, int columnNum
 						exceptionCallback.execute(ex, i, column);
 					}
 					// set entity value
@@ -477,29 +489,29 @@ public class ExcelImport implements Closeable {
 			try {
 				clazz.getMethod("clearCache").invoke(null);
 			} catch (Exception e) {
-				// 报错忽略，有可能没实现此方法
+				// ignore it now
 			}
 		}
 	}
 
-	/**
-	 * 导入测试
-	 */
 	public static void main(String[] args) throws Throwable {
 		System.out.println("start at "+DateUtils.formatDateTime(new Date()));
-		ExcelImport ei = new ExcelImport(new File("target/export.xlsx"));
-		for (int i = ei.getDataRowNum(); i < ei.getLastDataRowNum(); i++) {
-			Row row = ei.getRow(i);
-			if (row == null){
-				continue;
+		try(ExcelImport ei = new ExcelImport(new File("E:\\export_demo20181202.xlsx"))) {
+			for (int i = ei.getDataRowNum(); i < ei.getLastDataRowNum(); i++) {
+				Row row = ei.getRow(i);
+				if (row == null){
+					continue;
+				}
+				for (int j = 0; j < row.getLastCellNum(); j++) {
+					Object val = ei.getCellValue(row, j);
+					System.out.print(val+", ");
+				}
+				System.out.println();
 			}
-			for (int j = 0; j < row.getLastCellNum(); j++) {
-				Object val = ei.getCellValue(row, j);
-				System.out.print(val+", ");
-			}
-			System.out.println();
+			ei.close();
+		} catch (Exception e) {
+			System.out.println("error: "+e.getMessage());
 		}
-		ei.close();
 		System.out.println("end at "+DateUtils.formatDateTime(new Date()));
 	}
 
